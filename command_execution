@@ -1,0 +1,62 @@
+import os
+import webbrowser
+import pyttsx3
+import datetime
+import pyautogui as p 
+from fuzzywuzzy import fuzz
+from opts import opts 
+import pyautogui as p
+
+speak_engine = pyttsx3.init()
+def speak(what):
+    print(what)
+    speak_engine.say(what)
+    speak_engine.runAndWait()
+    speak_engine.stop()
+
+def recognize_cmd(cmd):
+    RC = {'cmd': '', 'percent': 0}
+    for c, v in opts['cmds'].items():
+        for x in v:
+            vrt = fuzz.ratio(cmd, x)
+            if vrt > RC['percent']:
+                RC['cmd'] = c
+                RC['percent'] = vrt
+    print("Recognized command:", RC) 
+    
+    if RC['percent'] < 30:
+        RC['cmd'] = ''  # Если процент совпадения меньше порогового значения, считаем, что команда не распознана.
+    
+    return RC
+
+def execute_cmd(cmd):
+    print("Received command:", cmd) 
+    if cmd == 'ctime':
+        # сказать текущее время
+        now = datetime.datetime.now()
+        speak("Сейчас " + str(now.hour) + ":" + str(now.minute))
+    elif cmd == "comunicate":
+        #открыйть телеграм
+        print("Executing 'comunicate' command")
+        os.system("start Telegram")
+        speak("Запрос выполнен")
+    elif cmd == 'web_programming':
+        os.system("start Notepad++")
+    elif cmd == 'chill':
+        path = r"C:\Users\1\AppData\Local\Programs\YouTube\YouTube.exe"
+        speak("not problem")
+        os.system(f"start {path}")
+    elif cmd == 'web':
+        url = "https://www.google.com"
+        webbrowser.open(url)
+    elif cmd == 'uni_ty':
+        path = r'C:\Users\1\Unity Hub\Unity Hub.exe'
+    elif cmd == 'pc_health':
+        path = 'C:\Program Files (x86)\FinalWire\AIDA64 Extreme\aida64.exe'
+        os.system(f'start {path}')
+        p.hotkey("ctrl, alt, delete")
+        
+    else:
+        print('Команда не распознана, повторите!')
+
+
