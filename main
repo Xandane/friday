@@ -2,18 +2,39 @@ import time
 import pyttsx3
 import speech_recognition_module as sr_module
 import command_execution as cmd_exec
-
-from opts import opts 
-
+from opts import opts
+from command_execution import execute_cmd, speak
+from friday_answers import answers,  greetings
+import random as r
+from comynicate import talk
+import asyncio as A
 
 
 speak_engine = pyttsx3.init()
-speak_engine.say("Я тут")
+speak_engine.say(r.choice(greetings))
+
 speak_engine.runAndWait()
 
 while True:
     recognized_text = sr_module.listen_microphone()
     if recognized_text:
         cmd = cmd_exec.recognize_cmd(recognized_text)
-        cmd_exec.execute_cmd(cmd['cmd'])
-    time.sleep(0.1)
+        cmd_exec.dell_cmd(cmd['cmd'])
+        cmd_exec.control_pc(cmd['cmd'])
+
+
+#TODO она слишком много кушает памяти обдумать оптимизацию если она возможна
+#TODO оптимизировать распознавание голоса, закниуть всё в классы?
+#TODO наверное лучше сделать две функции main для закрытия и открытия программ соблюдай принцип единственно ответствености
+
+        async def main():
+            what = r.choice(answers)
+            await cmd_exec.execute_cmd(cmd['cmd'])
+            await cmd_exec.find_info_in_webbrowser(cmd['cmd'])
+            await speak(what)
+
+
+        if __name__ == '__main__':
+          loop = A.get_event_loop()
+          loop.run_until_complete(main())
+
