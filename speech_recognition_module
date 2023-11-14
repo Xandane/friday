@@ -1,0 +1,23 @@
+import speech_recognition as sr
+from opts import opts 
+
+def listen_microphone():
+    r = sr.Recognizer()
+    m = sr.Microphone(device_index=1)
+    
+    with m as source:
+        r.adjust_for_ambient_noise(source)
+    
+    with m as source:
+        print("Слушаю...")
+        try:
+            audio = r.listen(source, timeout=5)
+            recognized_text = r.recognize_google(audio, language="ru-RU")
+            print("Вы сказали:", recognized_text)
+            return recognized_text
+        except sr.WaitTimeoutError:
+            print("Таймаут, попробуйте еще раз.")
+            return ""
+        except sr.UnknownValueError:
+            print("Не удалось распознать речь.")
+            return ""
