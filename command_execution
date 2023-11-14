@@ -1,62 +1,184 @@
 import os
-import webbrowser
+import webbrowser as wb
 import pyttsx3
 import datetime
-import pyautogui as p 
-from fuzzywuzzy import fuzz
-from opts import opts 
 import pyautogui as p
+from fuzzywuzzy import fuzz
+from opts import opts
+from friday_answers import answers
+import random as r
+from comynicate import talk
+import asyncio as a
+import subprocess
+import speech_recognition as sr
+import vosk
+import speech_recognition_module as sr_module
+import urllib.parse
+import pygame as game
+
+p.PAUSE =  1.5
+p.FAILSAFE = True
 
 speak_engine = pyttsx3.init()
-def speak(what):
+
+async def speak(what):
     print(what)
     speak_engine.say(what)
     speak_engine.runAndWait()
     speak_engine.stop()
 
+
+def speech(what):
+    print(what)
+    speak_engine.say(what)
+    speak_engine.runAndWait()
+    speak_engine.stop()
+
+
+"""
+async def to_say_hello():
+    game.init()
+    folder = "D:\Py_work\Friday\greetings"
+    music_files = [f for f in os.listdir(folder) if f.endswith(".mp3")]
+    if music_files:
+        file_to_play = os.path.join(folder, music_files[0])
+        game.mixer.music.load(file_to_play)
+        game.mixer.music.set_volume(0.5)
+        game.mixer.music.play()
+        while game.mixer.music.get_busy():
+            pass
+    else:
+        print("В папке с музикой нет файлов MP3")
+
+    game.quit()
+"""
+
 def recognize_cmd(cmd):
+   # global RC
     RC = {'cmd': '', 'percent': 0}
-    for c, v in opts['cmds'].items():
+    for c, v in opts ["cmds"].items():
         for x in v:
-            vrt = fuzz.ratio(cmd, x)
+            vrt = fuzz.token_sort_ratio(cmd, x)  # отличие от fuzz.ratio то что она сравнивает не зависимо от порядка и регистра
             if vrt > RC['percent']:
                 RC['cmd'] = c
                 RC['percent'] = vrt
-    print("Recognized command:", RC) 
-    
+    print("Recognized command:", RC)
+
     if RC['percent'] < 30:
         RC['cmd'] = ''  # Если процент совпадения меньше порогового значения, считаем, что команда не распознана.
-    
+
     return RC
 
-def execute_cmd(cmd):
-    print("Received command:", cmd) 
+
+
+
+
+#TODO добавить все приложение для открытия и закрытия
+#TODO реализовать autogui для голосового интерфейса пользования компом по типу создай папку и так дале...
+
+async def execute_cmd(cmd):
+    print("Received command:", cmd)
     if cmd == 'ctime':
-        # сказать текущее время
         now = datetime.datetime.now()
         speak("Сейчас " + str(now.hour) + ":" + str(now.minute))
+
     elif cmd == "comunicate":
         #открыйть телеграм
+        path_telegram = r"C:\Users\urami\AppData\Roaming\Telegram Desktop\Telegram.exe"
+        process = await a.create_subprocess_exec(path_telegram, stdout=a.subprocess.PIPE)
+        await process.wait()
+        stdout, _ = await process.communicate()
         print("Executing 'comunicate' command")
-        os.system("start Telegram")
-        speak("Запрос выполнен")
+
+
     elif cmd == 'web_programming':
-        os.system("start Notepad++")
-    elif cmd == 'chill':
-        path = r"C:\Users\1\AppData\Local\Programs\YouTube\YouTube.exe"
-        speak("not problem")
-        os.system(f"start {path}")
-    elif cmd == 'web':
-        url = "https://www.google.com"
-        webbrowser.open(url)
+        path_webstorm = r"C:\Program Files\JetBrains\WebStorm 2023.2.2\bin\webstorm64.exe"
+        process = await a.create_subprocess_exec(path_webstorm, stdout=a.subprocess.PIPE)
+        await process.wait()
+        stdout, _ = await process.communicate()
+        print("Executing 'comunicate' command")
+
+
+#    elif cmd == 'chill':
+ #       path_music = r"C:\Users\urami\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Chrome Apps\YouTube Music.exe"
+  #      process = await a.create_subprocess_exec(path_music, stdout=a.subprocess.PIPE)
+   #     await process.wait()
+    #    stdout, _ = await process.communicate()
+     #   print("Executing 'comunicate' command")
+
+
     elif cmd == 'uni_ty':
-        path = r'C:\Users\1\Unity Hub\Unity Hub.exe'
+        path_unity = r"E:\hub\Unity Hub\Unity Hub.exe"
+        process = await a.create_subprocess_exec(path_unity, stdout=a.subprocess.PIPE)
+        await process.wait()
+        stdout, _ = await process.communicate()
+        print("Executing 'comunicate' command")
+
     elif cmd == 'pc_health':
-        path = 'C:\Program Files (x86)\FinalWire\AIDA64 Extreme\aida64.exe'
-        os.system(f'start {path}')
-        p.hotkey("ctrl, alt, delete")
-        
+        path_aida = r"D:\AIDA64 Extreme\aida64.exe"
+        process = await a.create_subprocess_exec(path_aida, stdout=a.subprocess.PIPE)
+        await process.wait()
+        stdout, _ = await process.communicate()
+        print("Executing 'comunicate' command")
+
     else:
         print('Команда не распознана, повторите!')
 
 
+
+
+def dell_cmd(cmd):
+    print("Received kill command:", cmd)
+    if cmd == "kill_tg":
+       path = "Telegram.exe"
+       os.system(f"taskkill /f /im {path}")
+
+    elif cmd == "kill_music":#Разобраться как правильно закрить стримминг
+        path = 'Youtube Music'
+        os.system(f"taskkill /f /im {path}")
+
+    elif cmd == "kill_web":
+        path = 'webstorm64.exe'
+        os.system(f"taskkill /f /im {path}")
+
+    elif cmd == "kill_web_browse":
+        path = 'chrome.exe'
+        os.system(f"taskkill /f /im {path}")
+
+    elif cmd == "kill_uniti":
+        path = 'Unity Hub.exe'
+        os.system(f"taskkill /f /im {path}")
+
+#TODO завершить веб интерфес возможно сделать его асинхронным продумать разные фичи
+
+async def find_info_in_webbrowser(cmd):
+    if cmd == "web":
+        path_google = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
+        os.system(path_google)
+
+    elif cmd == "find":
+        speech("что пожелаете узнать?")
+        recognized_text = sr_module.listen_microphone()
+        wb.register("chrome", None, wb.BackgroundBrowser("C:\Program Files\Google\Chrome\Application\chrome.exe"))
+        encoded_url = urllib.parse.quote(recognized_text, safe=':/')
+        wb.open(recognized_text)
+
+    elif cmd == "tybe":
+        wb.open("https://www.youtube.com/")
+
+    elif cmd == "chill":
+        wb.open("https://music.youtube.com/")
+
+    elif cmd == "openAI":
+        wb.open("https://chat.openai.com/")
+
+
+
+def control_pc(cmd):
+    if cmd == "create_folder":
+        print("popa")
+        p.hotkey("ctrl","shift","n")
+        p.hotkey("enter")
+
+    elif cmd == "up_scroll":
+        p.vscroll(100)
