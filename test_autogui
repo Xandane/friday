@@ -1,0 +1,70 @@
+import pyautogui as p
+from ctypes import cast, POINTER
+from comtypes import CLSCTX_ALL
+from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
+import screen_brightness_control as sbc
+
+p.PAUSE = 1.5
+p.FAILSAFE = True
+
+
+def set_volume(volume_level):
+    devices = AudioUtilities.GetSpeakers()
+    interface = devices.Activate(
+        IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
+    volume = cast(interface, POINTER(IAudioEndpointVolume))
+    volume.SetMasterVolumeLevelScalar(volume_level, None)
+
+
+def set__brightness(val):
+    brightness = sbc.get_brightness()
+    sbc.set_brightness(val)
+
+
+while True:
+
+    input_data = int(input("Выберите команду:  "))
+
+    if input_data == 1:
+        p.hotkey("win", "Shift", "S")
+
+    elif input_data == 2:
+        p.hotkey("win", "m")
+
+    elif input_data == 3:
+        p.hotkey("CTRL", "SHIFT", "N")
+
+    elif input_data == 4:
+        max_val = 1
+        middle_val = 0.5
+        min_val = 0.2
+        mute_val = 0.0
+        sound_val = input("выбери уровень громкости: ")
+        if sound_val == "max":
+            set_volume(max_val)
+        elif sound_val == "mid":
+            set_volume(middle_val)
+        elif sound_val == "min":
+            set_volume(min_val)
+        else:
+            set_volume(mute_val)
+
+    elif input_data == 5:
+        p.hotkey("alt", "r")
+
+    elif input_data == 6:
+        p.press("enter")
+
+    elif input_data == 7:
+        data = input()
+        p.write(data)
+
+    elif input_data == 8:
+        val = int(input("выберите якрость: "))
+        set__brightness(val)
+
+    elif input_data == 9:
+        p.hotkey("win", "i")
+
+    else:
+        print("zhepka")
