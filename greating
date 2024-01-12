@@ -1,0 +1,76 @@
+import pyttsx3
+import pyaudio as P
+import pygame
+from datetime import datetime, date, time
+import requests
+from bs4 import BeautifulSoup as B
+import time as t
+
+
+
+
+
+def voice(what):
+    speak_engine = pyttsx3.init()
+    speak_engine.say(what)
+    speak_engine.runAndWait()
+
+
+
+
+def weather_gert():
+    api_token = '9629d19d3f7e42f691e61ba9f3cc7ca7'
+    user_input = "Житомир"
+    url_api = f"http://api.openweathermap.org/data/2.5/weather?q={user_input}&appid={api_token}"
+    response = requests.get(url_api)
+    data = response.json()
+    if response.status_code == 200:
+        temperature = data['main']['temp']
+        temperature_celsius = round(temperature - 273.15, 1)
+        description = data['weather'][0]['description']
+        voice(f"Текущая погода в городе {user_input}:")
+        voice(f"Температура: {temperature_celsius} °C")
+        voice(f"Описание: {description}")
+    else:
+        voice("Данные отсутствуют")
+
+
+d = [11, 12, 13, 14, 15]
+e = [16, 17, 18, 19, 20, 21]
+n = [22, 23, 00, 1, 2, 3]
+m = [4, 5, 6, 7, 8, 9, 10]
+
+
+
+
+# приветствие в зависимости от времени суток
+def time_gret():
+    full_time = datetime.now()
+    only_hour = full_time.hour
+    if only_hour in d:# чёт не красиво range наверное можно заюзать при дл времени вместо or
+        voice("Добрый день босс, Вы как всегда прекрасны. Предлагаю немного поработать")
+    elif only_hour in e:
+        voice("добрый вечер босс")
+    elif only_hour in n:
+        voice("Доброй ночи босс")
+    elif only_hour in m:
+        voice("доброе утро босс")
+    else:
+        print("")
+
+
+# музычка
+def music_gret():
+    pygame.mixer.init()
+    way = r'E:\\greetings\\Clash - Should I Stay Or Should I Go.mp3'
+    pygame.mixer.music.load(way)
+    pygame.mixer.music.set_volume(0.5)
+    pygame.mixer.music.play()
+    pygame.time.delay(90000)
+    pygame.quit()
+
+
+print(time_gret())
+print(weather_gert())
+print(music_gret())
+
