@@ -58,14 +58,14 @@ def recognize_cmd(cmd):
     RC = {'cmd': '', 'percent': 0}
     for c, v in opts ["cmds"].items():
         for x in v:
-            vrt = fuzz.token_sort_ratio(cmd, x)  # отличие от fuzz.ratio то что она сравнивает не зависимо от порядка и регистра
+            vrt = fuzz.token_sort_ratio(cmd, x)  #The difference from fuzz.ratio is that it compares regardless of order and case
             if vrt > RC['percent']:
                 RC['cmd'] = c
                 RC['percent'] = vrt
     print("Recognized command:", RC)
 
     if RC['percent'] < 30:
-        RC['cmd'] = ''  # Если процент совпадения меньше порогового значения, считаем, что команда не распознана.
+        RC['cmd'] = ''  # If the percentage of matches is less than the threshold value, we consider that the command is not recognized..
 
     return RC
 
@@ -73,8 +73,9 @@ def recognize_cmd(cmd):
 
 
 
-#TODO добавить все приложение для открытия и закрытия
-#TODO реализовать autogui для голосового интерфейса пользования компом по типу создай папку и так дале...
+#TODO add the entire application to open and close
+#TODO implement autogui for a voice interface for using a computer like create a folder and so on...
+
 
 async def execute_cmd(cmd):
     print("Received command:", cmd)
@@ -149,7 +150,7 @@ def dell_cmd(cmd):
         path = 'Unity Hub.exe'
         os.system(f"taskkill /f /im {path}")
 
-#TODO завершить веб интерфес возможно сделать его асинхронным продумать разные фичи
+#TODO complete the web interface, perhaps make it asynchronous, think through various features
 
 async def find_info_in_webbrowser(cmd):
     if cmd == "web":
