@@ -43,11 +43,11 @@ m = [4, 5, 6, 7, 8, 9, 10]
 
 
 
-# приветствие в зависимости от времени суток
+# greeting depending on the time of day
 def time_gret():
     full_time = datetime.now()
     only_hour = full_time.hour
-    if only_hour in d:# чёт не красиво range наверное можно заюзать при дл времени вместо or
+    if only_hour in d:# it's not pretty 
         voice("Добрый день босс, Вы как всегда прекрасны. Предлагаю немного поработать")
     elif only_hour in e:
         voice("добрый вечер босс")
@@ -59,7 +59,7 @@ def time_gret():
         print("")
 
 
-# музычка
+# music
 def music_gret():
     pygame.mixer.init()
     way = r'E:\\greetings\\Clash - Should I Stay Or Should I Go.mp3'
