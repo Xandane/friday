@@ -23,9 +23,9 @@ while True:
         cmd_exec.control_pc(cmd['cmd'])
 
 
-#TODO она слишком много кушает памяти обдумать оптимизацию если она возможна
-#TODO оптимизировать распознавание голоса, закниуть всё в классы?
-#TODO наверное лучше сделать две функции main для закрытия и открытия программ соблюдай принцип единственно ответствености
+#TODO it eats up too much memory, consider optimization if possible
+#TODO optimize voice recognition, put everything into classes?
+
 
         async def main():
             what = r.choice(answers)
